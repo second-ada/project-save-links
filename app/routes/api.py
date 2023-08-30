@@ -6,6 +6,11 @@ bp = Blueprint('api', __name__, url_prefix='/api')
 
 @bp.post('/links/')
 def read():
-    validation = Validator({'category': 'required', 'link': 'required'})
+    validation = Validator(
+        {
+            'category': 'required|not_empty',
+            'link': 'required|not_empty'
+        }
+    )
 
-    return validation.data
+    return ''

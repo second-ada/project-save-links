@@ -11,24 +11,25 @@ from flask import abort, request
 
 
 class Validator:
-    KEYS: list[str]
-    RULES = ['required']
-    DATA: Union[Any, None]
+    keys: list[str]
+    data: Union[Any, None]
+    rules = ['required']
+    errors = []
 
-    def __init__(self, data: dict) -> None:
-        self.DATA = request.get_json(silent=True)
-        if self.DATA is None:
+    def __init__(self, raw_data: dict) -> None:
+        self.data = request.get_json(silent=True)
+        if self.data is None:
             abort(422, 'No data provided.')
 
-        self.KEYS = list(data.keys())
+        self.keys = list(raw_data.keys())
 
-        rules = self.extract_rules(data)
-        for rule in rules:
-            self.apply_rule(rule)
+        rules = self.extract_rules(raw_data)
+        for rule, field in rules:
+            self.apply_rule(rule, field)
 
-    def apply_rule(self, rule: str):
-        if rule not in self.RULES:
-            return False
+    def apply_rule(self, rule: str, field: str):
+        if rule == 'required':
+            self.errors.append(f'Field "{field}" is required')
 
     def extract_rules(self, rules: dict) -> list[str]:
         _rules = []
@@ -39,6 +40,5 @@ class Validator:
         return _rules
 
     @property
-    def data(self):
-        print(self.KEYS)
-        return {}
+    def has_errors(self):
+        return len(self.errors) > 0
