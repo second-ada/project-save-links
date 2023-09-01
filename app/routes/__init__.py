@@ -1,4 +1,4 @@
-from typing import Any, Optional
+from typing import
 from flask import Flask
 from werkzeug.exceptions import HTTPException
 from app.routes import api
